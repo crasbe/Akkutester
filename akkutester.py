@@ -150,6 +150,7 @@ while True:
 		energie = statusAusgabe(messdaten, spannung, strom, energie, messZeit)
 		
 		if spannung < abschaltspannung:
+			senkeAusschalten()
 			print("\nAbschaltspannung unterschritten, Messung beendet!")
 			break
 	
