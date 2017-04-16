@@ -9,7 +9,9 @@ try:
     import RPi.GPIO as GPIO
 except RuntimeError:
     print("Error importing RPi.GPIO!  This is probably because you need superuser privileges.  You can achieve this by using 'sudo' to run your script")
-
+except:
+	import GPIO as asdf # Dummylib benutzen
+	GPIO = asdf.GPIO()
 
 # GPIO-Definitionen
 # Zahlen = Pinnummern, GPIO von Rev. 1, in Klammern Rev. 2
@@ -29,7 +31,7 @@ senke = 16	# GPIO 22 (23)
 # Konstanten
 strom = 5.0
 intervall = 1.0 # in Sekunden
-adc = 0.196078431372549
+adc = 0.196078431372549 # Volt pro Bit
 
 # Templates
 prot = "Messung: {}\n----------------------------\n"+\
@@ -51,7 +53,7 @@ mess = "Messung läuft!\n---------------\n"+\
 def spannungAuslesen():
 	spannung = 0
 	for bit in bits: # die Bits einzeln in das Ergebnis schieben
-		if(bit == GPIO.HIGH):
+		if(GPIO.input(bit) == GPIO.HIGH):
 			spannung += 1
 		spannung = spannung << 1
 	spannung = spannung >> 1 # einen zu weit geschoben..
@@ -111,8 +113,8 @@ GPIO.setmode(GPIO.BOARD)
 GPIO.setup(bits, GPIO.IN)
 GPIO.setup([senke, latch], GPIO.OUT)
 
-GPIO.output(latch, GPIO.high) # Wandler einschalten
-GPIO.output(senke, GPIO.low)  # Senke ausschalten
+GPIO.output(latch, GPIO.HIGH) # Wandler einschalten
+GPIO.output(senke, GPIO.LOW)  # Senke ausschalten
 
 
 # Hauptschleife
@@ -149,9 +151,6 @@ while True:
 		
 		if spannung < abschaltspannung:
 			print("\nAbschaltspannung unterschritten, Messung beendet!")
-			break
-		
-		if(messZeit > 100):
 			break
 	
 	print("\nMessung beendet!")
